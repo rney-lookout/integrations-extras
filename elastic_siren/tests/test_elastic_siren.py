@@ -30,6 +30,20 @@ cluster_health_mock = json.loads(
     }"""
 )
 
+optimizer_stats_mock = json.loads(
+    """{
+        "pSr9lVgSTc2D60DZ0LCDDA": {
+            "size": 25,
+            "hit_count": 515,
+            "miss_count": 25,
+            "eviction_count": 0,
+            "load_exception_count": 0,
+            "load_success_count": 70,
+            "total_load_time_in_millis": 232463
+        }
+    }"""
+)
+
 stats_mock = json.loads(
     """{
         "_nodes": {
@@ -100,7 +114,7 @@ def test_check_stats(aggregator, dd_run_check):
     #with mock.patch('datadog_checks.elastic_siren.elastic_siren._get_data', return_value=stats_mock):
     with mock.patch(
         'datadog_checks.elastic_siren.elastic_siren.ElasticSirenCheck._get_data',
-        side_effect=[cluster_health_mock,stats_mock]
+        side_effect=[cluster_health_mock, stats_mock, optimizer_stats_mock]
     ):
         dd_run_check(elastic_check)
         aggregator.assert_metric('elasticsearch.siren.memory.allocated_direct_memory_in_bytes', value=0.0, tags=tags, metric_type=aggregator.GAUGE, hostname='elasticsearch-coord')
@@ -126,3 +140,12 @@ def test_check_stats(aggregator, dd_run_check):
         aggregator.assert_metric('elasticsearch.siren.planner.thread_pool.task.active', value=0.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.planner.thread_pool.task.largest', value=3.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.planner.thread_pool.task.completed', value=31, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.size', value=25.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.hit_count', value=515.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.miss_count', value=25.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.eviction_count', value=0.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.load_exception_count', value=0.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.load_success_count', value=70.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.optimizer_statistics.total_load_time_in_millis', value=232.463, tags=tags, metric_type=aggregator.GAUGE, hostname='elasticsearch-coord')
+

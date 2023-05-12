@@ -15,7 +15,7 @@ INSTANCE = {
     'password': PASSWORD,
     'tags': CUSTOM_TAGS,
     'tls_verify': False,
-    'siren_node_stats': True,
+    'siren_optimizer_cache_stats': True,
 }
 
 @pytest.fixture(scope="session")

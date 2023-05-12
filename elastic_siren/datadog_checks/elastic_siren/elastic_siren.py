@@ -94,12 +94,13 @@ class ElasticSirenCheck(AgentCheck):
                 cluster_tags.append("cluster_name:{}".format(stats_data['cluster_name']))
             base_tags.extend(cluster_tags)
             service_check_tags.extend(cluster_tags)
-        self._process_stats_data(stats_data, SIREN_NODE_METRICS, base_tags)
+        node_name = self._process_stats_data(stats_data, SIREN_NODE_METRICS, base_tags)
 
         if self._config.siren_optimizer_cache_stats:
             try:
+                print("GET THE OPTIMIZER STATS")
                 optimizer_stats_data = self._get_data(siren_optimizer_stats_url)
-                self._process_stats_data(optimizer_stats_data, SIREN_OPTIMIZER_NODE_METRICS, base_tags)
+                self._process_optimizer_data(optimizer_stats_data, SIREN_OPTIMIZER_NODE_METRICS, node_name, base_tags)
             except requests.ReadTimeout as e:
                 self.log.warning("Timed out reading Siren optimizer cache stats from servers (%s) - stats will be missing", e)
 
@@ -157,6 +158,18 @@ class ElasticSirenCheck(AgentCheck):
 
             for metric, desc in iteritems(stats_metrics):
                 self._process_metric(node_data, metric, *desc, tags=metrics_tags, hostname=metric_hostname)
+            return node_name
+
+    def _process_optimizer_data(self, data, stats_metrics, metric_hostname, base_tags):
+        for node_data in itervalues(data):
+            metrics_tags = list(base_tags)
+
+            if metric_hostname:
+                metrics_tags.append('node_name:{}'.format(metric_hostname))
+
+            for metric, desc in iteritems(stats_metrics):
+                self._process_metric(node_data, metric, *desc, tags=metrics_tags, hostname=metric_hostname)
+
 
     def _process_metric(self, data, metric, xtype, path, xform=None, tags=None, hostname=None):
         """
