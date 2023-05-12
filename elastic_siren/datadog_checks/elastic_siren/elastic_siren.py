@@ -2,10 +2,6 @@
 # All rights reserved
 # Licensed under Simplified BSD License (see LICENSE)
 import re
-import time
-from collections import defaultdict, namedtuple
-from copy import deepcopy
-from itertools import product
 
 import requests
 from six import iteritems, itervalues
@@ -73,7 +69,6 @@ class ElasticSirenCheck(AgentCheck):
     def check(self, _):
         base_tags = list(self._config.tags)
         service_check_tags = list(self._config.service_check_tags)
-        stats_url = "/_nodes/_local/stats"
         siren_node_stats_url = "_siren/nodes/_local/stats"
         siren_optimizer_stats_url = "_siren/_local/cache"
 
@@ -81,7 +76,7 @@ class ElasticSirenCheck(AgentCheck):
         # Check ES version for this instance and define parameters
         # (URLs and metrics) accordingly
         try:
-            version = self._get_es_version()
+            self._get_es_version()
         except AuthenticationError:
             self.log.exception("The ElasticSearch credentials are incorrect")
             raise
@@ -89,8 +84,7 @@ class ElasticSirenCheck(AgentCheck):
         # Load stats data.
         # This must happen before other URL processing as the cluster name
         # is retrieved here, and added to the tag list.
-        stats_url = self._join_url(stats_url)
-        stats_data = self._get_data(stats_url)
+        stats_data = self._get_data(siren_node_stats_url)
 
         if stats_data.get('cluster_name'):
             # retrieve the cluster name from the data, and append it to the
@@ -100,19 +94,11 @@ class ElasticSirenCheck(AgentCheck):
                 cluster_tags.append("cluster_name:{}".format(stats_data['cluster_name']))
             base_tags.extend(cluster_tags)
             service_check_tags.extend(cluster_tags)
-
-        if self._config.siren_node_stats:
-            try:
-                node_stats_url = self._join_url(siren_node_stats_url)    
-                node_stats_data = self._get_data(node_stats_url)
-                self._process_stats_data(node_stats_data, SIREN_NODE_METRICS, base_tags)
-            except requests.ReadTimeout as e:
-                self.log.warning("Timed out reading Siren stats from servers (%s) - stats will be missing", e)
+        self._process_stats_data(stats_data, SIREN_NODE_METRICS, base_tags)
 
         if self._config.siren_optimizer_cache_stats:
             try:
-                optimizer_stats_url = self._join_url(siren_optimizer_stats_url)    
-                optimizer_stats_data = self._get_data(optimizer_stats_url)
+                optimizer_stats_data = self._get_data(siren_optimizer_stats_url)
                 self._process_stats_data(optimizer_stats_data, SIREN_OPTIMIZER_NODE_METRICS, base_tags)
             except requests.ReadTimeout as e:
                 self.log.warning("Timed out reading Siren optimizer cache stats from servers (%s) - stats will be missing", e)
@@ -152,7 +138,7 @@ class ElasticSirenCheck(AgentCheck):
         overrides `urlparse.urljoin` since it removes base url path
         https://docs.python.org/2/library/urlparse.html#urlparse.urljoin
         """
-        
+
         return urljoin(self._config.url, url)
 
     def _process_stats_data(self, data, stats_metrics, base_tags):
@@ -166,14 +152,8 @@ class ElasticSirenCheck(AgentCheck):
                 metrics_tags.append('node_name:{}'.format(node_name))
 
             # Resolve the node's hostname
-            if self._config.node_name_as_host:
-                if node_name:
-                    metric_hostname = node_name
-            elif self._config.cluster_stats:
-                for k in ['hostname', 'host']:
-                    if k in node_data:
-                        metric_hostname = node_data[k]
-                        break
+            if node_name:
+                metric_hostname = node_name
 
             for metric, desc in iteritems(stats_metrics):
                 self._process_metric(node_data, metric, *desc, tags=metrics_tags, hostname=metric_hostname)

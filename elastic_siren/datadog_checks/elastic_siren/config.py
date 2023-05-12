@@ -12,7 +12,6 @@ ESInstanceConfig = namedtuple(
     [
         'node_name_as_host',
         'service_check_tags',
-        'siren_node_stats',
         'siren_optimizer_cache_stats',
         'tags',
         'url',
@@ -28,15 +27,12 @@ def from_instance(instance):
     if not url:
         raise ConfigurationError("A URL must be specified in the instance")
 
-    siren_node_stats = is_affirmative(instance.get('siren_node_stats', False))
     siren_optimizer_cache_stats = is_affirmative(instance.get('siren_optimizer_cache_stats', False))
     node_name_as_host = is_affirmative(instance.get('node_name_as_host', False))
 
     # Support URLs that have a path in them from the config, for
     # backwards-compatibility.
     parsed = urlparse(url)
-    if parsed[2] and not admin_forwarder:
-        url = '{}://{}'.format(parsed[0], parsed[1])
     port = parsed.port
     host = parsed.hostname
 
@@ -52,7 +48,6 @@ def from_instance(instance):
     config = ESInstanceConfig(
         node_name_as_host=node_name_as_host,
         service_check_tags=service_check_tags,
-        siren_node_stats=siren_node_stats,
         siren_optimizer_cache_stats=siren_optimizer_cache_stats,
         tags=tags,
         url=url

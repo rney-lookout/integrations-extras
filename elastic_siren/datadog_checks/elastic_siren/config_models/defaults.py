@@ -106,10 +106,6 @@ def instance_min_collection_interval(field, value):
     return 15
 
 
-def instance_node_name_as_host(field, value):
-    return False
-
-
 def instance_ntlm_domain(field, value):
     return get_default_field_value(field, value)
 
@@ -136,10 +132,6 @@ def instance_request_size(field, value):
 
 def instance_service(field, value):
     return get_default_field_value(field, value)
-
-
-def instance_siren_node_stats(field, value):
-    return True
 
 
 def instance_siren_optimizer_cache_stats(field, value):

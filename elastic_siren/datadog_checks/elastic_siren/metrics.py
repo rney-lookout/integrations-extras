@@ -2,8 +2,6 @@
 # All rights reserved
 # Licensed under a 3-clause BSD style license (see LICENSE)
 
-from bisect import bisect
-
 from .utils import byte_to_mebibyte, ms_to_second
 
 SIREN_NODE_METRICS = {
