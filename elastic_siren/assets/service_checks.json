@@ -1,0 +1,18 @@
+[
+    {
+        "agent_version": "7.0.0",
+        "integration": "Elasticsearch-Siren",
+        "check": "elastic_siren.can_connect",
+        "statuses": [
+            "ok",
+            "critical"
+        ],
+        "groups": [
+            "host",
+            "port",
+            "server"
+        ],
+        "name": "Can Connect",
+        "description": "Returns `CRITICAL` if the Agent is unable to connect to the monitored Elasticsearch instance. Returns `OK` otherwise."
+    }
+]

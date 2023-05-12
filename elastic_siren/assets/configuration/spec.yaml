@@ -1,0 +1,42 @@
+name: elastic_siren
+files:
+- name: elastic_siren.yaml
+  options:
+  - template: init_config
+    options:
+    - template: init_config/http
+    - template: init_config/default
+  - template: instances
+    options:
+    - name: url
+      required: true
+      description: |
+        The URL where elasticsearch accepts HTTP requests. This is used to
+        fetch statistics from the nodes and information about the cluster health.
+      value:
+        example: http://localhost:9200
+        type: string
+    - name: node_name_as_host
+      description: |
+        If each machine only runs a single Elasticsearch node per cluster, you
+        want to set each Elasticsearch `node.name` to the machine hostname. You may
+        then set `node_name_as_host` to `true` to avoid duplicate hostnames.
+        See: https://www.elastic.co/guide/en/elasticsearch/reference/current/node.name.html
+      value:
+        type: boolean
+        example: false
+    - name: siren_node_stats
+      description: |
+        If you want to send the Siren Federated Elasticsearch Plug-in statistics. You can set this option to
+        `false` to disable sending the node statistics
+      value:
+        type: boolean
+        example: true
+    - name: siren_optimizer_cache_stats
+      description: |
+        If you want to include the Siren Optimizer Statistics Cache data you can set this option to `true`
+      value:
+        type: boolean
+        example: false
+    - template: instances/default
+    - template: instances/http

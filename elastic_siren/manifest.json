@@ -1,0 +1,53 @@
+{
+  "manifest_version": "2.0.0",
+  "app_uuid": "ba744252-d872-4d42-bc84-e71d78636569",
+  "app_id": "elastic-siren",
+  "display_on_public_website": false,
+  "tile": {
+    "overview": "README.md#Overview",
+    "configuration": "README.md#Setup",
+    "support": "README.md#Support",
+    "changelog": "CHANGELOG.md",
+    "description": "Monitor overall cluster status for the Siren Federated Plug-in for Elasticsearch.",
+    "title": "Siren ElasticSearch Federated Search",
+    "media": [],
+    "classifier_tags": [
+      "Category::Data Store",
+      "Category::Log Collection",
+      "Category::Tracing",
+      "Supported OS::Linux",
+      "Supported OS::Windows",
+      "Supported OS::macOS"
+    ]
+  },
+  "author": {
+    "support_email": "richard.ney@lookout.com",
+    "name": "Richard Ney",
+    "homepage": "",
+    "sales_email": ""
+  },
+  "oauth": {},
+  "assets": {
+    "integration": {
+      "source_type_name": "elastic_siren",
+      "configuration": {
+        "spec": "assets/configuration/spec.yaml"
+      },
+      "events": {
+        "creates_events": false
+      },
+      "metrics": {
+        "prefix": "elasticsearch.siren.",
+        "check": "",
+        "metadata_path": "metadata.csv"
+      },
+      "service_checks": {
+        "metadata_path": "assets/service_checks.json"
+      }
+    },
+    "dashboards": {},
+    "monitors": {},
+    "saved_views": {},
+    "logs": {}
+  }
+}
