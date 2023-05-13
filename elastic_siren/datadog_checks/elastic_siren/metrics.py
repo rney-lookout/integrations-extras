@@ -15,7 +15,7 @@ SIREN_NODE_METRICS = {
     'elasticsearch.siren.query_cache.total_count': ('monotonic_count', 'query_cache.total_count'),
     'elasticsearch.siren.query_cache.hit_count': ('rate', 'query_cache.hit_count'),
     'elasticsearch.siren.query_cache.miss_count': ('rate', 'query_cache.miss_count'),
-    'elasticsearch.siren.query_cache.cache_size': ('rate', 'query_cache.cache_size'),
+    'elasticsearch.siren.query_cache.cache_size': ('monotonic_count', 'query_cache.cache_size'),
     'elasticsearch.siren.query_cache.cache_count': ('monotonic_count', 'query_cache.cache_count'),
     'elasticsearch.siren.query_cache.evictions': ('rate', 'query_cache.evictions'),
     'elasticsearch.siren.planner.thread_pool.job.permits': ('rate', 'planner.thread_pool.job.permits'),

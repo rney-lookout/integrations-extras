@@ -127,7 +127,7 @@ def test_check_stats(aggregator, dd_run_check):
         aggregator.assert_metric('elasticsearch.siren.query_cache.total_count', value=0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.query_cache.hit_count', value=0.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.query_cache.miss_count', value=0.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
-        aggregator.assert_metric('elasticsearch.siren.query_cache.cache_size', value=0.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
+        aggregator.assert_metric('elasticsearch.siren.query_cache.cache_size', value=0.0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.query_cache.cache_count', value=0, tags=tags, metric_type=aggregator.MONOTONIC_COUNT, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.query_cache.evictions', value=0.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')
         aggregator.assert_metric('elasticsearch.siren.planner.thread_pool.job.permits', value=1.0, tags=tags, metric_type=aggregator.RATE, hostname='elasticsearch-coord')

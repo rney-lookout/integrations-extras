@@ -69,8 +69,8 @@ class ElasticSirenCheck(AgentCheck):
     def check(self, _):
         base_tags = list(self._config.tags)
         service_check_tags = list(self._config.service_check_tags)
-        siren_node_stats_url = "_siren/nodes/_local/stats"
-        siren_optimizer_stats_url = "_siren/_local/cache"
+        siren_node_stats_url = self._config.url + "/_siren/nodes/_local/stats"
+        siren_optimizer_stats_url = self._config.url + "/_siren/_local/cache"
 
 
         # Check ES version for this instance and define parameters
@@ -84,7 +84,7 @@ class ElasticSirenCheck(AgentCheck):
         # Load stats data.
         # This must happen before other URL processing as the cluster name
         # is retrieved here, and added to the tag list.
-        stats_data = self._get_data(siren_node_stats_url)
+        stats_data = self._get_data(siren_node_stats_url, False)
 
         if stats_data.get('cluster_name'):
             # retrieve the cluster name from the data, and append it to the
@@ -99,7 +99,7 @@ class ElasticSirenCheck(AgentCheck):
         if self._config.siren_optimizer_cache_stats:
             try:
                 print("GET THE OPTIMIZER STATS")
-                optimizer_stats_data = self._get_data(siren_optimizer_stats_url)
+                optimizer_stats_data = self._get_data(siren_optimizer_stats_url, False)
                 self._process_optimizer_data(optimizer_stats_data, SIREN_OPTIMIZER_NODE_METRICS, node_name, base_tags)
             except requests.ReadTimeout as e:
                 self.log.warning("Timed out reading Siren optimizer cache stats from servers (%s) - stats will be missing", e)
